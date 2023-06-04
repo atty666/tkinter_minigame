@@ -9,7 +9,8 @@ class Game:
         self.tk.title("Mr StickHands wanna out!")
         self.tk.resizable(False, False)
         self.tk.wm_attributes("-topmost", True)
-        self.canvas = Canvas(self.tk, width=500, height=500)
+        self.canvas = Canvas(self.tk, width=500, height=500,
+                             highlightthickness=0)
         self.canvas.pack()
         self.tk.update()
         self.canvas_height = 500
@@ -22,7 +23,7 @@ class Game:
                 self.canvas.create_image(x * w, y * h,
                                          image=self.background,
                                          anchor="nw")
-        self.sprites = []       # sprites - game objects
+        self.sprites = []  # sprites - game objects
         self.running = True
 
     def mainloop(self):
@@ -35,5 +36,33 @@ class Game:
             time.sleep(0.01)
 
 
-g = Game()
-g.mainloop()
+class Coords:
+    def __init__(self, x1=0, y1=0, x2=0, y2=0):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+
+
+def within_x(co1, co2):
+    if (co2.x1 < co1.x1 < co2.x2) \
+            or (co2.x1 < co1.x2 < co2.x2) \
+            or (co2.x1 > co1.x1 and co2.x2 < co1.x2) \
+            or (co1.x1 < co2.x2 < co1.x2):
+        return True
+    else:
+        return False
+
+
+def within_y(co1, co2):
+    if (co1.y2 > co2.y1 and co1.y1 < co2.y2) \
+            or (co2.y1 < co1.y2 < co2.y2) \
+            or (co1.y1 < co2.y1 < co1.y2) \
+            or (co1.y1 < co2.y2 < co1.y2):
+        return True
+    else:
+        return False
+
+
+game = Game()
+game.mainloop()
