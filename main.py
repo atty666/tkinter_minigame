@@ -28,7 +28,7 @@ class Game:
 
     def mainloop(self):
         while True:
-            if self.running == True:
+            if self.running:
                 for sprite in self.sprites:
                     sprite.move()
             self.tk.update_idletasks()
@@ -119,31 +119,22 @@ g = Game()
 
 platform1 = PlatformSprite(g, PhotoImage(file="platforms/large-platform.gif"),
                            0, 480, 100, 10)
-g.sprites.append(platform1)
 platform2 = PlatformSprite(g, PhotoImage(file="platforms/large-platform.gif"),
                            150, 440, 100, 10)
-g.sprites.append(platform2)
 platform3 = PlatformSprite(g, PhotoImage(file="platforms/large-platform.gif"),
                            300, 400, 100, 10)
-g.sprites.append(platform3)
 platform4 = PlatformSprite(g, PhotoImage(file="platforms/large-platform.gif"),
                            300, 160, 100, 10)
-g.sprites.append(platform4)
 platform5 = PlatformSprite(g, PhotoImage(file="platforms/medium-platform.gif"),
                            175, 350, 66, 10)
-g.sprites.append(platform5)
 platform6 = PlatformSprite(g, PhotoImage(file="platforms/medium-platform.gif"),
                            50, 300, 66, 10)
-g.sprites.append(platform6)
 platform7 = PlatformSprite(g, PhotoImage(file="platforms/medium-platform.gif"),
                            170, 120, 66, 10)
-g.sprites.append(platform7)
 platform8 = PlatformSprite(g, PhotoImage(file="platforms/medium-platform.gif"),
                            40, 60, 66, 10)
-g.sprites.append(platform8)
 platform9 = PlatformSprite(g, PhotoImage(file="platforms/low-platform.gif"),
                            170, 250, 32, 10)
-g.sprites.append(platform9)
 platform10 = PlatformSprite(g, PhotoImage(file="platforms/low-platform.gif"),
                             230, 200, 32, 10)
 g.sprites.append(platform1)
