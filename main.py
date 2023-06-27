@@ -44,16 +44,36 @@ class Coords:
         self.y2 = y2
 
 
+def within_x(co1, co2):
+    if (co1.x1 > co2.x1 and co1.x1 < co2.x2) \
+        or (co1.x2 > co2.x1 and co1.x2 < co2.x2) \
+        or (co2.x1 > co1.x1 and co2.x1 < co1.x2) \
+        or (co2.x2 > co1.x1 and co2.x2 < co1.x2):
+        return True
+    else:
+        return False
+
+
+def within_y(co1, co2):
+    if (co1.y1 > co2.y1 and co1.y1 < co2.y2) \
+        or (co1.y2 > co2.y1 and co1.y2 < co2.y2) \
+        or (co2.y1 > co1.y1 and co2.y1 < co1.y2) \
+        or (co2.y2 > co1.y1 and co2.y2 < co1.y2):
+        return True
+    else:
+        return False
+
+
 def collided_left(co1, co2):
     if within_y(co1, co2):
-        if co2.x2 >= co1.x1 >= co2.x1:
+        if co1.x1 <= co2.x2 and co1.x1 >= co2.x1:
             return True
     return False
 
 
 def collided_right(co1, co2):
     if within_y(co1, co2):
-        if co2.x1 <= co1.x2 <= co2.x2:
+        if co1.x2 >= co2.x1 and co1.x2 <= co2.x2:
             return True
     return False
 
@@ -73,27 +93,7 @@ def collided_bottom(y, co1, co2):
     return False
 
 
-def within_x(co1, co2):
-    if (co2.x1 < co1.x1 < co2.x2) \
-            or (co2.x1 < co1.x2 < co2.x2) \
-            or (co2.x1 > co1.x1 and co2.x2 < co1.x2) \
-            or (co1.x1 < co2.x2 < co1.x2):
-        return True
-    else:
-        return False
-
-
-def within_y(co1, co2):
-    if (co1.y2 > co2.y1 and co1.y1 < co2.y2) \
-            or (co2.y1 < co1.y2 < co2.y2) \
-            or (co1.y1 < co2.y1 < co1.y2) \
-            or (co1.y1 < co2.y2 < co1.y2):
-        return True
-    else:
-        return False
-
-
-class Sprites:
+class Sprite:
     def __init__(self, game):
         self.game = game
         self.endgame = False
@@ -106,18 +106,18 @@ class Sprites:
         return self.coordinates
 
 
-class PlatformSprite(Sprites):
+class PlatformSprite(Sprite):
     def __init__(self, game, photo_image, x, y, width, height):
-        Sprites.__init__(self, game)
+        Sprite.__init__(self, game)
         self.photo_image = photo_image
         self.image = game.canvas.create_image(x, y,
                                               image=self.photo_image, anchor='nw')
         self.coordinates = Coords(x, y, x + width, y + height)
 
 
-class Stickman(Sprites):
+class StickFigureSprite(Sprite):
     def __init__(self, game):
-        Sprites.__init__(self, game)
+        Sprite.__init__(self, game)
         self.images_left = [
             PhotoImage(file="stickmanfigure/figure-L1.gif"),
             PhotoImage(file="stickmanfigure/figure-L2.gif"),
@@ -137,9 +137,9 @@ class Stickman(Sprites):
         self.jump_count = 0
         self.last_time = time.time()
         self.coordinates = Coords()
-        game.canvas.bind_all("<KeyPress-Left>", self.turn_left)
-        game.canvas.bind_all("<KeyPress-Right>", self.turn_right)
-        game.canvas.bind_all("<space>", self.jump)
+        game.canvas.bind_all('<KeyPress-Left>', self.turn_left)
+        game.canvas.bind_all('<KeyPress-Right>', self.turn_right)
+        game.canvas.bind_all('<space>', self.jump)
 
     def turn_left(self, evt):
         if self.y == 0:
@@ -207,14 +207,12 @@ class Stickman(Sprites):
         elif self.y < 0 and co.y1 <= 0:
             self.y = 0
             top = False
-
         if self.x > 0 and co.x2 >= self.game.canvas_width:
             self.x = 0
             right = False
         elif self.x < 0 and co.x1 <= 0:
             self.x = 0
             left = False
-
         for sprite in self.game.sprites:
             if sprite == self:
                 continue
@@ -222,7 +220,6 @@ class Stickman(Sprites):
             if top and self.y < 0 and collided_top(co, sprite_co):
                 self.y = -self.y
                 top = False
-
             if bottom and self.y > 0 and collided_bottom(self.y, co, sprite_co):
                 self.y = sprite_co.y1 - co.y2
                 if self.y < 0:
@@ -233,7 +230,6 @@ class Stickman(Sprites):
                     and co.y2 < self.game.canvas_height \
                     and collided_bottom(1, co, sprite_co):
                 falling = False
-
             if left and self.x < 0 and collided_left(co, sprite_co):
                 self.x = 0
                 left = False
@@ -250,9 +246,9 @@ class Stickman(Sprites):
             self.game.canvas.move(self.image, self.x, self.y)
 
 
-class Door(Sprites):
+class Door(Sprite):
     def __init__(self, game, photo_image, x, y, width, height):
-        Sprites.__init__(self, game)
+        Sprite.__init__(self, game)
         self.photo_image = photo_image
         self.image = game.canvas.create_image(x, y,
                                               image=self.photo_image, anchor='nw')
@@ -283,7 +279,7 @@ platform9 = PlatformSprite(g, PhotoImage(file="platforms/low-platform.gif"),
 platform10 = PlatformSprite(g, PhotoImage(file="platforms/low-platform.gif"),
                             230, 200, 32, 10)
 
-sf = Stickman(g)
+sf = StickFigureSprite(g)
 door = Door(g, PhotoImage(file='doors/door-locked.gif'), 45, 30, 40, 35)
 
 g.sprites.append(sf)
