@@ -237,13 +237,27 @@ class Stickman(Sprites):
             if left and self.x < 0 and collided_left(co, sprite_co):
                 self.x = 0
                 left = False
+                if sprite.endgame:
+                    self.game.running = False
             if right and self.x > 0 and collided_right(co, sprite_co):
                 self.x = 0
                 right = False
+                if sprite.endgame:
+                    self.game.running = False
         if falling and bottom and self.y == 0 \
                 and co.y2 < self.game.canvas_height:
             self.y = 4
             self.game.canvas.move(self.image, self.x, self.y)
+
+
+class Door(Sprites):
+    def __init__(self, game, photo_image, x, y, width, height):
+        Sprites.__init__(self, game)
+        self.photo_image = photo_image
+        self.image = game.canvas.create_image(x, y,
+                                              image=self.photo_image, anchor='nw')
+        self.coordinates = Coords(x, y, x + (width / 2), y + height)
+        self.endgame = True
 
 
 g = Game()
@@ -270,8 +284,10 @@ platform10 = PlatformSprite(g, PhotoImage(file="platforms/low-platform.gif"),
                             230, 200, 32, 10)
 
 sf = Stickman(g)
+door = Door(g, PhotoImage(file='doors/door-locked.gif'), 45, 30, 40, 35)
 
 g.sprites.append(sf)
+g.sprites.append(door)
 g.sprites.append(platform1)
 g.sprites.append(platform2)
 g.sprites.append(platform3)
